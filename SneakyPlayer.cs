@@ -35,9 +35,17 @@ public class SneakyPlayer : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        Vector3 movementInput = new Vector3(Input.GetAxis("Horizontal"),0f,Input.GetAxis("Vertical"));
-        Move(movementInput);
+        Vector3 movementInput = new Vector3(Input.GetAxis("Horizontal"),0f,Input.GetAxis("Vertical")).normalized;
+        
         if(Input.GetKeyDown(KeyCode.LeftControl)) crouched = !crouched;
         transform.Rotate(new Vector3(0f, Input.GetAxis("Mouse X"), 0f));
+        if(movementInput.sqrMagnitude < 0.5f)
+        {
+            currentNoiseEmission = 0f;
+        }
+        else
+        {
+            Move(movementInput);
+        }
     }
 }
