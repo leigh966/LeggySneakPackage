@@ -4,13 +4,31 @@ using UnityEngine;
 
 public class DetectingEnemy : MonoBehaviour
 {
-    public float hearingSensitivity;
+    public float hearingSensitivity, fieldOfView, numberOfRaycasts;
     public SneakyPlayer player;
     float getHearingLevel()
     {
         float distanceFromPlayer = (player.transform.position - transform.position).magnitude;
         return hearingSensitivity * player.currentNoiseEmission / distanceFromPlayer;
     }
+
+    bool canSeePlayer()
+    {
+        float deltaAngle = fieldOfView / (float)(numberOfRaycasts);
+        for(float angle = -fieldOfView/2; angle <= fieldOfView/2; angle+=deltaAngle)
+        {
+            Vector3 rayVector = Quaternion.Euler(0f, angle, 0f) * transform.forward;
+            bool didHit = Physics.Raycast(transform.position, rayVector, out RaycastHit hit, 100.0F);
+            if (!didHit) continue;
+            if (hit.collider.gameObject == player.gameObject)
+            {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
 
     // Start is called before the first frame update
     void Start()
@@ -29,6 +47,10 @@ public class DetectingEnemy : MonoBehaviour
         else
         {
             Debug.Log(hearingLevel);
+        }
+        if(canSeePlayer())
+        {
+            Debug.Log("I can see you");
         }
     }
 }
